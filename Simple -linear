@@ -1,0 +1,55 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import pandas as pd\nimport numpy as np\nimport matplotlib.pyplot as plt\nimport seaborn as sns\nimport statsmodels.api as sm\nfrom scipy import stats"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df = pd.read_csv('marketing_and_sales_data_evaluate_lr.csv')\nprint(df.shape)\nprint(df.head())\nprint(df.isnull().sum())"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df = df.dropna()\ncorrelations = df[['TV', 'Radio', 'Social_Media']].corrwith(df['Sales'])\nprint(correlations)\nbest_predictor = correlations.idxmax()\nprint('Best predictor:', best_predictor)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "X = sm.add_constant(df[best_predictor])\nmodel = sm.OLS(df['Sales'], X).fit()\nprint(model.summary())"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "plt.scatter(df[best_predictor], df['Sales'], alpha=0.5)\nplt.plot(df[best_predictor], model.fittedvalues, color='red')\nplt.xlabel(best_predictor)\nplt.ylabel('Sales')\nplt.title(f'{best_predictor} vs Sales - Linear Regression')\nplt.show()\nprint(f'R-squared: {model.rsquared:.4f}')\nprint(f'Best marketing channel for ROI: {best_predictor}')"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
+  "language_info": {"name": "python", "version": "3.11.0"}
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}
